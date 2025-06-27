@@ -22,6 +22,12 @@ pipeline {
             }
         }
 
+        stage('Check tests presence') {
+            steps {
+                bat 'docker run --rm my-fastapi-app ls -l /app/tests'
+            }
+        }
+
         stage('Run Tests in Docker') {
             steps {
                 bat 'docker run --rm my-fastapi-app pytest --disable-warnings'
