@@ -16,30 +16,30 @@ pipeline {
             }
         }
 
-        stage('Install dependencies') {
-            steps {
-                bat "${PYTHON} -m venv %VENV_DIR%"
-                bat "%VENV_DIR%\\Scripts\\pip install --upgrade pip"
-                bat "%VENV_DIR%\\Scripts\\pip install -r requirements.txt"
-            }
-        }
-
-        stage('Run tests') {
-            steps {
-                bat "%VENV_DIR%\\Scripts\\pytest --junitxml=test-results.xml"
-            }
-        }
-
         stage('Build Docker Image') {
             steps {
-                bat 'docker build -t fastapi-app .'
+                sh 'docker build -t my-fastapi-app .'
+            }
+        }
+
+       stage('Run Tests in Docker') {
+            steps {
+                sh 'docker run --rm my-fastapi-app pytest --disable-warnings'
+            }
+        }
+
+
+        stage('Deploy/Run') {
+            steps {
+                sh 'docker run -d -p 8000:8000 --name fastapi_app my-fastapi-app'
             }
         }
     }
 
     post {
         always {
-            junit 'test-results.xml'
+            sh 'docker stop fastapi_app || true'
+            sh 'docker rm fastapi_app || true'
         }
     }
 }
