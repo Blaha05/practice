@@ -3,20 +3,27 @@ pipeline {
 
     environment {
         VENV_DIR = 'venv'
+        PYTHON = 'C:\\Users\\vikto\\AppData\\Local\\Programs\\Python\\Python312\\python.exe'
     }
 
     stages {
+        stage('Checkout') {
+            steps {
+                git 'https://github.com/Blaha05/practice'
+            }
+        }
+
         stage('Install dependencies') {
             steps {
-                bat 'python -m venv %VENV_DIR%'
-                bat '%VENV_DIR%\\Scripts\\pip install --upgrade pip'
-                bat '%VENV_DIR%\\Scripts\\pip install -r requirements.txt'
+                bat "${PYTHON} -m venv %VENV_DIR%"
+                bat "%VENV_DIR%\\Scripts\\pip install --upgrade pip"
+                bat "%VENV_DIR%\\Scripts\\pip install -r requirements.txt"
             }
         }
 
         stage('Run tests') {
             steps {
-                bat '%VENV_DIR%\\Scripts\\pytest --junitxml=test-results.xml'
+                bat "%VENV_DIR%\\Scripts\\pytest --junitxml=test-results.xml"
             }
         }
 
