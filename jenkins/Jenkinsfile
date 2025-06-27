@@ -18,28 +18,27 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t my-fastapi-app .'
+                bat 'docker build -t my-fastapi-app .'
             }
         }
 
-       stage('Run Tests in Docker') {
+        stage('Run Tests in Docker') {
             steps {
-                sh 'docker run --rm my-fastapi-app pytest --disable-warnings'
+                bat 'docker run --rm my-fastapi-app pytest --disable-warnings'
             }
         }
-
 
         stage('Deploy/Run') {
             steps {
-                sh 'docker run -d -p 8000:8000 --name fastapi_app my-fastapi-app'
+                bat 'docker run -d -p 8000:8000 --name fastapi_app my-fastapi-app'
             }
         }
     }
 
     post {
         always {
-            sh 'docker stop fastapi_app || true'
-            sh 'docker rm fastapi_app || true'
+            bat 'docker stop fastapi_app || exit 0'
+            bat 'docker rm fastapi_app || exit 0'
         }
     }
 }
